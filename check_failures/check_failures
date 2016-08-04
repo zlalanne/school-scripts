@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+
+import sys
+import csv
+
+_, alg_retesters, alg_failed = sys.argv
+
+alg_retesters_student_ids = []
+alg_failed_student_ids = []
+student_name_lookup = {}
+
+with open(alg_retesters, 'r') as csvfile:
+    reader = csv.DictReader(csvfile)
+    for row in reader:
+        alg_retesters_student_ids.append(row['STUDENT ID'])
+        student_name = '{}, {}'.format(row['LAST NAME'], row['FIRST NAME'])
+        student_name_lookup[row['STUDENT ID']] = student_name
+
+with open(alg_failed, 'r') as f:
+    for line in f.readlines():
+        stripped = line.strip()
+        try:
+            int(stripped)
+            alg_failed_student_ids.append(stripped)
+        except ValueError:
+            pass
+
+failed_and_retested = [student_id for student_id in alg_retesters_student_ids if student_id not in alg_failed_student_ids]
+
+failed_and_retested = set(failed_and_retested)
+
+print('Total Students: {}'.format(len(failed_and_retested)))
+print('-' * 79)
+
+for student in failed_and_retested:
+    print('{} : {}'.format(student, student_name_lookup[student]))
